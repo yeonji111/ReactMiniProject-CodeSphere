@@ -1,4 +1,24 @@
+import { useState } from "react";
+
 export default function Signup() {
+  const [userid, setUserId] = useState("");
+  const userIdOnChangeHandler = (e) => {
+    setUserId(e.target.value);
+    console.log(userid);
+  };
+
+  const [userpassword, setUserPassword] = useState("");
+  const userpasswordOnChangeHandler = (e) => {
+    setUserPassword(e.target.value);
+    console.log(userpassword);
+  };
+
+  const [username, setUserName] = useState("");
+  const usernameOnChangeHandler = (e) => {
+    setUserName(e.target.value);
+    console.log(username);
+  };
+
   return (
     <>
       <div className="min-w-screen min-h-screen bg-gray-900 flex items-center justify-center px-5 py-5">
@@ -231,13 +251,17 @@ export default function Signup() {
                         <i className="mdi mdi-account-outline text-gray-400 text-lg"></i>
                       </div>
                       <input
+                        onChange={userIdOnChangeHandler}
                         id="userid"
                         type="text"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                         placeholder="Enter Your Id"
                       />
                       <div className="w-2/3 ml-4">
-                        <button className="block w-full bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                        <button
+                          // onClick={goCheckIsDuple}
+                          className="block w-full bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                        >
                           중복확인
                         </button>
                       </div>
@@ -258,6 +282,7 @@ export default function Signup() {
                         <i className="mdi mdi-account-outline text-gray-400 text-lg"></i>
                       </div>
                       <input
+                        onChange={userpasswordOnChangeHandler}
                         id="userpassword"
                         type="password"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
@@ -280,6 +305,7 @@ export default function Signup() {
                         <i className="mdi mdi-account-outline text-gray-400 text-lg"></i>
                       </div>
                       <input
+                        onChange={usernameOnChangeHandler}
                         id="username"
                         type="text"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
