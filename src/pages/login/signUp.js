@@ -1,22 +1,110 @@
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
+import axios from "axios";
 
 export default function Signup() {
+  /* 유저아이디 핸들러 */
   const [userid, setUserId] = useState("");
-  const userIdOnChangeHandler = (e) => {
-    setUserId(e.target.value);
-    console.log(userid);
-  };
+  const userIdOnChangeHandler = useCallback(
+    (e) => {
+      setUserId(e.target.value);
+    },
+    [userid]
+  );
 
+  /* 유저패스워드 핸들러 */
   const [userpassword, setUserPassword] = useState("");
-  const userpasswordOnChangeHandler = (e) => {
-    setUserPassword(e.target.value);
-    console.log(userpassword);
+  const userpasswordOnChangeHandler = useCallback(
+    (e) => {
+      setUserPassword(e.target.value);
+    },
+    [userpassword]
+  );
+
+  /* 유저이름 핸들러 */
+  const [username, setUserName] = useState("");
+  const usernameOnChangeHandler = useCallback(
+    (e) => {
+      setUserName(e.target.value);
+    },
+    [username]
+  );
+
+  /* 지역 핸들러 */
+  const [location, setLocation] = useState("");
+  const locationOnChangeHandler = useCallback(
+    (e) => {
+      setLocation(e.target.value);
+    },
+    [location]
+  );
+  /* 개발필드 핸들러 */
+  const [developmentField, setDevelopmentField] = useState("");
+  const developmentFieldOnChangeHandler = useCallback(
+    (e) => {
+      setDevelopmentField(e.target.value);
+    },
+    [developmentField]
+  );
+
+  // 중복체크 확인 쿼리
+  // 사용자가 입력한 아이디를 확인하여 중복 여부를 체크하는 함수
+  const [checkId, setCheckId] = useState(false);
+
+  const checkIsDuplicated = async () => {
+    const res = await axios.post("/api/users", {
+      url: "checkIsDuplicated",
+      userid: userid,
+    });
+
+    console.log("res.data 확인용 ===>", res.data.duplicate);
+
+    if (res.date == "아이디 중복") {
+      alert("이미 존재하는 아이디입니다.");
+      return setCheckId(false);
+    } else {
+      alert("사용 가능한 아이디입니다.");
+      setCheckId(true);
+    }
   };
 
-  const [username, setUserName] = useState("");
-  const usernameOnChangeHandler = (e) => {
-    setUserName(e.target.value);
-    console.log(username);
+  // 페이지 이동을 위한 라우터
+  const router = useRouter();
+
+  // 입력값이 모두 채워졌는지 확인하기 위한 핸들러
+  // 버튼 클릭 시 확인 후 페이지 이동
+  const handleSubmit = async () => {
+    // 통과 X
+    if (
+      userid == "" ||
+      userpassword == "" ||
+      username == "" ||
+      location == "" ||
+      developmentField == ""
+    ) {
+      alert("모든 필드를 입력하세요.");
+      return;
+    }
+    if (!checkId) {
+      alert("아이디 중복 체크해주세요.");
+      return;
+    }
+    // 통과 O
+    // axios 통신
+    else if (checkId) {
+      const res = await axios.post("/api/users", {
+        url: "insertUser",
+        userid,
+        userpassword,
+        username,
+        location,
+        developmentField,
+      });
+      console.log("res.data 확인용 ===>", res.data);
+      if (res.data)
+        localStorage.setItem("userid", JSON.stringify({ userid: userid }));
+      router.push("/login/userDetailInfo");
+    }
   };
 
   return (
@@ -252,6 +340,7 @@ export default function Signup() {
                       </div>
                       <input
                         onChange={userIdOnChangeHandler}
+                        value={userid}
                         id="userid"
                         type="text"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
@@ -259,7 +348,7 @@ export default function Signup() {
                       />
                       <div className="w-2/3 ml-4">
                         <button
-                          // onClick={goCheckIsDuple}
+                          onClick={checkIsDuplicated}
                           className="block w-full bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
                         >
                           중복확인
@@ -283,6 +372,7 @@ export default function Signup() {
                       </div>
                       <input
                         onChange={userpasswordOnChangeHandler}
+                        value={userpassword}
                         id="userpassword"
                         type="password"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
@@ -306,6 +396,7 @@ export default function Signup() {
                       </div>
                       <input
                         onChange={usernameOnChangeHandler}
+                        value={username}
                         id="username"
                         type="text"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
@@ -324,12 +415,16 @@ export default function Signup() {
                       근무 또는 거주 지역
                     </label>
                     <div className="relative">
-                      <select className="w-full py-2 pl-3 pr-10 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500">
-                        <option value="">지역 선택</option>
-                        <option value="">서울</option>
-                        <option value="">경기</option>
-                        <option value="">부산</option>
-                        <option value="">인천</option>
+                      <select
+                        onChange={locationOnChangeHandler}
+                        value={location}
+                        className="w-full py-2 pl-3 pr-10 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+                      >
+                        <option>지역 선택</option>
+                        <option value="서울">서울</option>
+                        <option value="경기">경기</option>
+                        <option value="부산">부산</option>
+                        <option value="인천">인천</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                         <svg
@@ -361,14 +456,15 @@ export default function Signup() {
                     </label>
                     <div className="relative">
                       <select
-                        id="location"
+                        onChange={developmentFieldOnChangeHandler}
+                        value={developmentField}
                         className="w-full py-2 pl-3 pr-10 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       >
-                        <option value="">분야 선택</option>
-                        <option value="">프론트엔드</option>
-                        <option value="">백엔드</option>
-                        <option value="">풀스택</option>
-                        <option value="">DBA</option>
+                        <option>분야 선택</option>
+                        <option value="프론트엔드">프론트엔드</option>
+                        <option value="백엔드">백엔드</option>
+                        <option value="풀스택">풀스택</option>
+                        <option value="DBA">DBA</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                         <svg
@@ -392,7 +488,10 @@ export default function Signup() {
 
                 <div className="flex -mx-3">
                   <div className="w-full px-3 mb-5">
-                    <button className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                    <button
+                      onClick={handleSubmit}
+                      className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                    >
                       REGISTER NOW
                     </button>
                   </div>

@@ -1,4 +1,50 @@
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
+import axios from "axios";
+
 export default function SignIn() {
+  const router = useRouter();
+  const [userid, setUserId] = useState("");
+  const [userpw, setUserPw] = useState("");
+  const userIdOnChangeHandler = useCallback(
+    (e) => {
+      setUserId(e.target.value);
+    },
+    [userid]
+  );
+
+  const userpwOnChangeHandler = useCallback(
+    (e) => {
+      setUserPw(e.target.value);
+    },
+    [userpw]
+  );
+
+  const selectUser = async () => {
+    const res = await axios.post("/api/users", {
+      url: "login",
+      userid: userid,
+      userpw: userpw,
+    });
+    console.log("res.data 확인용 ===>", res.data);
+  };
+
+  // 로그인 버튼 이벤트
+  const goLogin = () => {
+    // user 테이블에서 id,pw 조회해서 결과에 따라 알림창 출력
+    if (selectUser(userid, userpw)) {
+      // alert("로그인 성공");
+      // 메인페이지로 이동
+      router.push("/");
+    } else {
+      alert("로그인 실패");
+    }
+  };
+
+  const cancelLogin = () => {
+    router.push("/");
+  };
+
   return (
     <>
       <div className="min-w-screen min-h-screen bg-gray-900 flex items-center justify-center px-5 py-5">
@@ -232,6 +278,8 @@ export default function SignIn() {
                       <input
                         id="userid"
                         type="text"
+                        onChange={userIdOnChangeHandler}
+                        value={userid}
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                         placeholder="Enter Your Id"
                       />
@@ -253,6 +301,8 @@ export default function SignIn() {
                     <input
                       id="userpw"
                       type="text"
+                      onChange={userpwOnChangeHandler}
+                      value={userpw}
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="Enter Your Password"
                       maxLength="20"
@@ -262,12 +312,18 @@ export default function SignIn() {
 
                 <div className="flex -mx-3 mt-10">
                   <div className="w-1/2 px-3 mb-5">
-                    <button className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                    <button
+                      onClick={goLogin}
+                      className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                    >
                       로그인 하기
                     </button>
                   </div>
                   <div className="w-1/2 px-3 mb-5">
-                    <button className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                    <button
+                      onClick={cancelLogin}
+                      className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                    >
                       로그인 취소
                     </button>
                   </div>

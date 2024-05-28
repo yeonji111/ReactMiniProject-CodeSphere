@@ -1,4 +1,93 @@
+import { useRouter } from "next/router";
+import { useCallback, useState } from "react";
+import axios from "axios";
+
 export default function UserDetailInfo() {
+  // 페이지 이동
+  const router = useRouter();
+  const [nickname, setNickname] = useState("");
+  const [confirmNickname, setConfirmNickname] = useState(false);
+  const [introduce, setIntroduce] = useState("");
+  const [gender, setGender] = useState("");
+
+  // 닉네임 입력이 된 상황일 경우 중복확인 필수 체크 후
+  // 정보 추가 가능하게 하기
+  const nicknameOnChangeHandler = useCallback(
+    (e) => {
+      setNickname(e.target.value);
+      setConfirmNickname(false);
+    },
+    [nickname]
+  );
+
+  // 닉네임 중복 체크 함수
+  // 체크 후 경고창 띄우는 이벤트
+  const goCheckNickname = async () => {
+    const res = await axios.post("/api/users", {
+      url: "checkIsDupleciated",
+      nickname: nickname,
+    });
+    // console.log("res.data 확인용 ===>", res.data);
+    if (res.data == "닉네임 중복") {
+      alert("이미 존재하는 닉네임입니다.");
+    } else {
+      alert("사용 가능한 닉네임입니다.");
+      setConfirmNickname(true);
+    }
+  };
+
+  // 간단 소개 20자 제한 핸들러
+  const introduceOnChangeHandler = useCallback(
+    (e) => {
+      setIntroduce(e.target.value);
+      if (introduce.length > 20) {
+        alert("간단 소개는 20자 내로 작성해주세요. ");
+        return setIntroduce("");
+      }
+    },
+    [introduce]
+  );
+
+  // 사용자 성별 핸들러
+  const genderOnChangeHandler = useCallback(
+    (e) => {
+      setGender(e.target.value);
+    },
+    [gender]
+  );
+
+  // 사용자 추가 정보 DB에 저장
+  const goAddUserInfo = async () => {
+    // 닉네임 입력했을시 반드시 중복 체크하라고 경고창 띄우기
+    if (confirmNickname == false && nickname != "") {
+      alert("닉네임 중복확인해주세요. ");
+      return;
+    }
+    console.log(localStorage.getItem("userid"));
+
+    // 사용자의 모든 입력값을 DB에 insert하는 함수
+    const res = await axios.post("/api/users", {
+      url: "updateDetail",
+      nickname: nickname,
+      introduce: introduce,
+      gender: gender,
+      userid: localStorage.getItem("userid"),
+    });
+
+    if (res.data == "성공") {
+      alert("회원정보를 저장했습니다.");
+      // 페이지 이동
+      router.push("/login/signIn");
+    } else if (res.data == "실패") {
+      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+      return;
+    }
+  };
+
+  const passDetail = () => {
+    router.push("/login/signIn");
+  };
+
   return (
     <>
       <div className="min-w-screen min-h-screen bg-gray-900 flex items-center justify-center px-5 py-5">
@@ -231,12 +320,16 @@ export default function UserDetailInfo() {
                         <i className="mdi mdi-account-outline text-gray-400 text-lg"></i>
                       </div>
                       <input
+                        onChange={nicknameOnChangeHandler}
                         type="text"
                         className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                         placeholder="Enter Your Nickname"
                       />
                       <div className="w-2/3 ml-4">
-                        <button className="block w-full bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                        <button
+                          onClick={goCheckNickname}
+                          className="block w-full bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                        >
                           중복확인
                         </button>
                       </div>
@@ -257,6 +350,7 @@ export default function UserDetailInfo() {
                     </div>
                     <input
                       type="text"
+                      onChange={introduceOnChangeHandler}
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="Enter Your Introduce"
                     />
@@ -265,7 +359,10 @@ export default function UserDetailInfo() {
 
                 <div className="flex -mx-3">
                   <div className="w-full px-3 mb-5">
-                    <label className="text-xs font-semibold px-1">
+                    <label
+                      className="text-xs font-semibold px-1"
+                      value={gender}
+                    >
                       사용자 성별
                     </label>
                     <div className="flex">
@@ -273,9 +370,13 @@ export default function UserDetailInfo() {
                         <i className="mdi mdi-account-outline text-gray-400 text-lg"></i>
                       </div>
 
-                      <div className="grid w-[40rem] grid-cols-2 gap-2 rounded-xl bg-gray-200 p-2">
+                      <div
+                        className="grid w-[40rem] grid-cols-2 gap-2 rounded-xl bg-gray-200 p-2"
+                        onChange={genderOnChangeHandler}
+                      >
                         <div>
                           <input
+                            value="남성"
                             type="radio"
                             name="gender"
                             id="M"
@@ -290,6 +391,7 @@ export default function UserDetailInfo() {
                         </div>
                         <div>
                           <input
+                            value="여성"
                             type="radio"
                             name="gender"
                             id="W"
@@ -309,12 +411,18 @@ export default function UserDetailInfo() {
 
                 <div className="flex -mx-3 mt-10">
                   <div className="w-1/2 px-3 mb-5">
-                    <button className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                    <button
+                      onClick={goAddUserInfo}
+                      className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                    >
                       사용자 정보 추가
                     </button>
                   </div>
                   <div className="w-1/2 px-3 mb-5">
-                    <button className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                    <button
+                      onClick={passDetail}
+                      className="block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                    >
                       건너뛰기
                     </button>
                   </div>
