@@ -3,49 +3,38 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 
 export default function Signup() {
+  // 페이지 이동을 위한 라우터
+  const router = useRouter();
+
   /* 유저아이디 핸들러 */
   const [userid, setUserId] = useState("");
-  const userIdOnChangeHandler = useCallback(
-    (e) => {
-      setUserId(e.target.value);
-    },
-    [userid]
-  );
+  const userIdOnChangeHandler = useCallback((e) => {
+    setUserId(e.target.value);
+  }, []);
 
   /* 유저패스워드 핸들러 */
   const [userpassword, setUserPassword] = useState("");
-  const userpasswordOnChangeHandler = useCallback(
-    (e) => {
-      setUserPassword(e.target.value);
-    },
-    [userpassword]
-  );
+  const userpasswordOnChangeHandler = useCallback((e) => {
+    setUserPassword(e.target.value);
+  }, []);
 
   /* 유저이름 핸들러 */
   const [username, setUserName] = useState("");
-  const usernameOnChangeHandler = useCallback(
-    (e) => {
-      setUserName(e.target.value);
-    },
-    [username]
-  );
+  const usernameOnChangeHandler = useCallback((e) => {
+    setUserName(e.target.value);
+  }, []);
 
   /* 지역 핸들러 */
   const [location, setLocation] = useState("");
-  const locationOnChangeHandler = useCallback(
-    (e) => {
-      setLocation(e.target.value);
-    },
-    [location]
-  );
+  const locationOnChangeHandler = useCallback((e) => {
+    setLocation(e.target.value);
+  }, []);
+
   /* 개발필드 핸들러 */
   const [developmentField, setDevelopmentField] = useState("");
-  const developmentFieldOnChangeHandler = useCallback(
-    (e) => {
-      setDevelopmentField(e.target.value);
-    },
-    [developmentField]
-  );
+  const developmentFieldOnChangeHandler = useCallback((e) => {
+    setDevelopmentField(e.target.value);
+  }, []);
 
   // 중복체크 확인 쿼리
   // 사용자가 입력한 아이디를 확인하여 중복 여부를 체크하는 함수
@@ -57,19 +46,16 @@ export default function Signup() {
       userid: userid,
     });
 
-    console.log("res.data 확인용 ===>", res.data.duplicate);
+    console.log("res.data 확인용 ===>", res.data);
 
-    if (res.date == "아이디 중복") {
+    if (res.data == "아이디 중복") {
       alert("이미 존재하는 아이디입니다.");
-      return setCheckId(false);
+      setCheckId(false);
     } else {
       alert("사용 가능한 아이디입니다.");
       setCheckId(true);
     }
   };
-
-  // 페이지 이동을 위한 라우터
-  const router = useRouter();
 
   // 입력값이 모두 채워졌는지 확인하기 위한 핸들러
   // 버튼 클릭 시 확인 후 페이지 이동
@@ -85,25 +71,32 @@ export default function Signup() {
       alert("모든 필드를 입력하세요.");
       return;
     }
+
     if (!checkId) {
       alert("아이디 중복 체크해주세요.");
       return;
     }
+
     // 통과 O
     // axios 통신
-    else if (checkId) {
-      const res = await axios.post("/api/users", {
-        url: "insertUser",
-        userid,
-        userpassword,
-        username,
-        location,
-        developmentField,
+    const res = await axios.post("/api/users", {
+      url: "insertUser",
+      userid,
+      userpassword,
+      username,
+      location,
+      developmentField,
+    });
+    console.log("res.data 확인용 ===>", res.data);
+
+    if (res.data) {
+      localStorage.setItem("userid", JSON.stringify({ userid: userid }));
+      router.push({
+        pathname: "/login/userDetailInfo",
+        query: { userid: userid },
       });
-      console.log("res.data 확인용 ===>", res.data);
-      if (res.data)
-        localStorage.setItem("userid", JSON.stringify({ userid: userid }));
-      router.push("/login/userDetailInfo");
+    } else {
+      alert("회원가입 실패입니다.");
     }
   };
 

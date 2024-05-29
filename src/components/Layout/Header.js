@@ -7,10 +7,19 @@ import { useRouter } from "next/router";
 const Header = () => {
   const [activeLink, setActiveLink] = useState(null);
   const [scrollActive, setScrollActive] = useState(false);
+  const [user, setUser] = useState("");
+
   useEffect(() => {
-    window.addEventListener("scroll", () => {
-      setScrollActive(window.scrollY > 20);
-    });
+    window.addEventListener(
+      "scroll",
+      () => {
+        setScrollActive(window.scrollY > 20);
+      },
+      []
+    );
+    if (localStorage.getItem("login")) {
+      setUser(localStorage.getItem("login"));
+    }
   }, []);
 
   const router = useRouter();
@@ -103,14 +112,38 @@ const Header = () => {
               News
             </LinkScroll>
           </ul>
-          <div
-            onClick={() => {
-              router.push("/login/signUp");
-            }}
-            className="col-start-10 col-end-12 font-medium flex justify-end items-center"
-          >
-            <ButtonOutline className="ml-4">Sign Up</ButtonOutline>
-          </div>
+          {/* 삼항연산자로 로컬스토리지에 값이 있을 경우 logout
+              값이 없을 경우 signin, signup 버튼 보이도록 하기 */}
+          {user ? (
+            <div
+              onClick={() => {
+                localStorage.removeItem("login");
+                setUser(false);
+              }}
+              className="col-start-10 col-end-12 font-medium flex justify-end items-center"
+            >
+              <ButtonOutline className="ml-4">Logout</ButtonOutline>
+            </div>
+          ) : (
+            <>
+              <div
+                onClick={() => {
+                  router.push("/login/signUp");
+                }}
+                className="col-start-10 col-end-12 font-medium flex justify-end items-center"
+              >
+                <ButtonOutline className="ml-4">Sign Up</ButtonOutline>
+              </div>
+              <div
+                onClick={() => {
+                  router.push("/login/signIn");
+                }}
+                className="col-start-10 col-end-12 font-medium flex justify-end items-center"
+              >
+                <ButtonOutline className="ml-4">Sign In</ButtonOutline>
+              </div>
+            </>
+          )}
         </nav>
       </header>
 

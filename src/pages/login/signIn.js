@@ -4,40 +4,38 @@ import axios from "axios";
 
 export default function SignIn() {
   const router = useRouter();
+
   const [userid, setUserId] = useState("");
   const [userpw, setUserPw] = useState("");
-  const userIdOnChangeHandler = useCallback(
-    (e) => {
-      setUserId(e.target.value);
-    },
-    [userid]
-  );
 
-  const userpwOnChangeHandler = useCallback(
-    (e) => {
-      setUserPw(e.target.value);
-    },
-    [userpw]
-  );
+  const userIdOnChangeHandler = useCallback((e) => {
+    setUserId(e.target.value);
+  }, []);
 
-  const selectUser = async () => {
+  const userpwOnChangeHandler = useCallback((e) => {
+    setUserPw(e.target.value);
+  }, []);
+
+  // 로그인 버튼 이벤트
+  const goLogin = async () => {
     const res = await axios.post("/api/users", {
       url: "login",
       userid: userid,
       userpw: userpw,
     });
-    console.log("res.data 확인용 ===>", res.data);
-  };
 
-  // 로그인 버튼 이벤트
-  const goLogin = () => {
-    // user 테이블에서 id,pw 조회해서 결과에 따라 알림창 출력
-    if (selectUser(userid, userpw)) {
-      // alert("로그인 성공");
-      // 메인페이지로 이동
+    if (res.data == "로그인 성공") {
+      // 로그인 성공 메인페이지로 이동
+      // 로컬스토리지에 로그인 완료 여부 저장
+      alert("로그인 성공");
+      localStorage.setItem(
+        "login",
+        JSON.stringify({ userid: userid, userpw: userpw })
+      );
       router.push("/");
     } else {
-      alert("로그인 실패");
+      alert("로그인 실패, 아이디 혹은 비밀번호가 틀립니다");
+      return;
     }
   };
 

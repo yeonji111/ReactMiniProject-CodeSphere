@@ -5,6 +5,8 @@ import axios from "axios";
 export default function UserDetailInfo() {
   // 페이지 이동
   const router = useRouter();
+  const { userid } = router.query;
+
   const [nickname, setNickname] = useState("");
   const [confirmNickname, setConfirmNickname] = useState(false);
   const [introduce, setIntroduce] = useState("");
@@ -12,13 +14,10 @@ export default function UserDetailInfo() {
 
   // 닉네임 입력이 된 상황일 경우 중복확인 필수 체크 후
   // 정보 추가 가능하게 하기
-  const nicknameOnChangeHandler = useCallback(
-    (e) => {
-      setNickname(e.target.value);
-      setConfirmNickname(false);
-    },
-    [nickname]
-  );
+  const nicknameOnChangeHandler = useCallback((e) => {
+    setNickname(e.target.value);
+    setConfirmNickname(false);
+  }, []);
 
   // 닉네임 중복 체크 함수
   // 체크 후 경고창 띄우는 이벤트
@@ -37,33 +36,22 @@ export default function UserDetailInfo() {
   };
 
   // 간단 소개 20자 제한 핸들러
-  const introduceOnChangeHandler = useCallback(
-    (e) => {
-      setIntroduce(e.target.value);
-      if (introduce.length > 20) {
-        alert("간단 소개는 20자 내로 작성해주세요. ");
-        return setIntroduce("");
-      }
-    },
-    [introduce]
-  );
+  const introduceOnChangeHandler = useCallback((e) => {
+    setIntroduce(e.target.value);
+  }, []);
 
   // 사용자 성별 핸들러
-  const genderOnChangeHandler = useCallback(
-    (e) => {
-      setGender(e.target.value);
-    },
-    [gender]
-  );
+  const genderOnChangeHandler = useCallback((e) => {
+    setGender(e.target.value);
+  }, []);
 
   // 사용자 추가 정보 DB에 저장
   const goAddUserInfo = async () => {
     // 닉네임 입력했을시 반드시 중복 체크하라고 경고창 띄우기
-    if (confirmNickname == false && nickname != "") {
+    if (!confirmNickname && nickname != "") {
       alert("닉네임 중복확인해주세요. ");
       return;
     }
-    console.log(localStorage.getItem("userid"));
 
     // 사용자의 모든 입력값을 DB에 insert하는 함수
     const res = await axios.post("/api/users", {
@@ -71,7 +59,7 @@ export default function UserDetailInfo() {
       nickname: nickname,
       introduce: introduce,
       gender: gender,
-      userid: localStorage.getItem("userid"),
+      userid: userid,
     });
 
     if (res.data == "성공") {
@@ -353,6 +341,7 @@ export default function UserDetailInfo() {
                       onChange={introduceOnChangeHandler}
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="Enter Your Introduce"
+                      maxLength={20}
                     />
                   </div>
                 </div>
