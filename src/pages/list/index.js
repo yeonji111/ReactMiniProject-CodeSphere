@@ -3,8 +3,10 @@ import { useRouter } from "next/router";
 import axios from "axios";
 
 import React, { useState, useEffect } from "react";
+import InvitePopup from "./InvitePopup";
 
 export default function Index() {
+  // 유저 리스트 관련
   const [userid, setUserId] = useState("");
   const [list, setList] = useState([]);
   const router = useRouter();
@@ -14,33 +16,54 @@ export default function Index() {
     if (localStorage.getItem("login")) {
       const userid = JSON.parse(localStorage.getItem("login")).userid;
       setUserId(userid);
-      // console.log(userid);
     } else {
       router.push("/login/signIn");
     }
-    getList();
   }, []);
 
+  useEffect(() => {
+    getList();
+  }, [userid]);
+
+  console.log("로그인중인 아이디 ===>", userid);
   const getList = async () => {
     // 로그인 상태 시 쿼리 쏴서 화면에 구현
     const res = await axios.post("/api/list", {
       url: "getList",
       userid: userid,
     });
-    // console.log(res.data); // 배열임
-
     // query문으로 result가 정상적으로 넘어오는 경우
-    // setList
-    console.log(res.data);
+    // console.log(res.data);
     if (res.data.length > 0) {
       setList(res.data);
     }
   };
 
-  // console.log("=====>", list); // 배열임
+  // 팝업 관련
+  const [open, setOpen] = useState(false);
+  const inviteMessage = (param) => {
+    // 회원 목록 클릭 시 그룹 초대하기 InvitePopup 팝업창 오픈
+    console.log("param ===> ", param);
+    if (param == "크루원" || param == "초대대기") {
+      alert("초대대기 또는 초대완료된 회원에게는 초대장을 보낼 수 없습니다.");
+      return;
+    }
+
+    if (!open) {
+      setOpen(true);
+    }
+    const close = (param) => {
+      console.log("param: ", param);
+      // const { status } = param;
+      if (close) {
+        setOpen(false);
+      }
+    };
+  };
 
   return (
     <>
+      {open ? <InvitePopup onClose={close} /> : null}
       <Header />
       <section className="antialiased bg-gray-100 text-gray-600 h-screen px-4">
         <div className="flex flex-col justify-center h-full">
@@ -77,7 +100,12 @@ export default function Index() {
                   <tbody className="text-sm divide-y divide-gray-100">
                     {list.map((v, i) => {
                       return (
-                        <tr key={i}>
+                        <tr
+                          key={i}
+                          onClick={() =>
+                            inviteMessage(v.status, v.user_id, v.group_id)
+                          }
+                        >
                           <td className="p-2 whitespace-nowrap">
                             <div className="text-center">{v.user_name}</div>
                           </td>
