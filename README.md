@@ -1,3 +1,35 @@
+## 메인화면
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/05313161-d1e6-4a64-8ab2-acfdb6266895)
+
+## 회원가입
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/23348352-eb95-49d1-b97d-711698c44156)
+
+유효성 테스트 (필수 정보 누락)
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/19e171ce-ab59-4f0e-b858-65163df04a17)
+
+
+## 회원가입 사용자 추가 정보 입력
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/3f95b896-a24f-490d-a08d-4f58cf98dd34)
+
+## 로그인
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/a5d883ff-6f8c-4d7f-9e65-f99bf4b0c61f)
+
+## 커뮤니티 회원 목록 및 초대
+
+크루장이 아닌 경우
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/7980adba-85a4-47e0-a50a-cb07da8139d5)
+
+크루장인 경우
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/e8c2e91b-8c27-48a9-b5ca-b2e071a5b070)
+
+그룹 초대 기능 (크루장이 아닌 경우 초대장을 보낼 수 없음)
+![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/b638509d-e4b1-47f1-8d89-d3f4a7cbb2ef)
+
+
+
+---
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
