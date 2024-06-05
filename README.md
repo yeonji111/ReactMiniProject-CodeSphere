@@ -1,17 +1,17 @@
 ## 메인화면
 ![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/05313161-d1e6-4a64-8ab2-acfdb6266895)
 
-## 회원가입
+## 회원가입 팝업
 ![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/23348352-eb95-49d1-b97d-711698c44156)
 
 유효성 테스트 (필수 정보 누락)
 ![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/19e171ce-ab59-4f0e-b858-65163df04a17)
 
 
-## 회원가입 사용자 추가 정보 입력
+## 회원가입 사용자 추가 정보 입력 팝업
 ![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/3f95b896-a24f-490d-a08d-4f58cf98dd34)
 
-## 로그인
+## 로그인 팝업
 ![image](https://github.com/yeonji111/ReactMiniProject-CodeSphere/assets/154227258/a5d883ff-6f8c-4d7f-9e65-f99bf4b0c61f)
 
 ## 커뮤니티 회원 목록 및 초대
